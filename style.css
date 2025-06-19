@@ -1,0 +1,453 @@
+/* Base styles for light/dark mode transition and global layout */
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative; /* Essential for absolutely positioned idle objects */
+    overflow-x: hidden; /* Prevents horizontal scroll from subtle movements/animations */
+}
+
+/* Dark mode specific background and text colors */
+.dark {
+    background-color: #1a202c; /* Deep charcoal */
+    color: #e2e8f0; /* Off-white for text */
+}
+
+/* Light mode specific background and text colors (default) */
+.light {
+    background-color: #f7fafc; /* Very light grey */
+    color: #2d3748; /* Dark grey for text */
+}
+
+/* Global Loader Overlay: Appears before custom video loader */
+#loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensures it's on top of everything */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease;
+}
+
+/* State for hiding the global loader */
+#loader-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Allows user interaction with elements beneath when hidden */
+}
+
+/* Simple CSS Spinner Loader: Used by the global loader */
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey base */
+    border-top: 8px solid #3498db; /* Blue spinning part */
+    border-radius: 50%; /* Circular shape */
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite; /* Rotation animation */
+}
+
+/* Keyframe animation for the spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Smooth scroll behavior for anchor links (e.g., navigation) */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Home Page Specific Styles: Fading effect for interactive elements */
+/* Applies reduced opacity and disables pointer events for elements not hovered */
+.home-fader .fade-target {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+/* Specific rule to completely hide certain elements when fading */
+.home-fader .fade-target.fade-out-important {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Floating Document (appears on hover of interactive texts) */
+.floating-document {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.75); /* Initial smaller scale and centered */
+    width: 80vw; /* Responsive width */
+    max-width: 600px; /* Max width for larger screens */
+    height: 60vw; /* Responsive height */
+    max-height: 400px; /* Max height for larger screens */
+    background-color: white;
+    border-radius: 0.75rem; /* rounded-lg from Tailwind */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl from Tailwind */
+    overflow: hidden;
+    z-index: 40; /* Stacks above regular content, below extra-data */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth transition for scale, opacity, transform */
+    pointer-events: none; /* Initially not clickable */
+}
+
+/* Floating document becomes visible and interactive when its parent interactive item is hovered */
+.home-fader .interactive-item .floating-document {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1); /* Zooms to full size */
+    pointer-events: auto; /* Makes it clickable */
+}
+
+/* Extra Data Pop-up (appears on hover of interactive texts) */
+.extra-data {
+    position: absolute;
+    top: calc(100% + 1rem); /* Positions 1rem below the interactive text */
+    left: 50%;
+    transform: translateX(-50%); /* Centers horizontally */
+    background-color: rgba(17, 24, 39, 0.95); /* Semi-transparent dark grey */
+    padding: 1rem;
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+    color: white;
+    font-size: 0.875rem; /* text-sm */
+    z-index: 50; /* Highest z-index to be on top of floating document */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    white-space: nowrap; /* Prevents text wrapping for compact popups */
+    min-width: 200px; /* Ensures a minimum readable width */
+    text-align: left;
+}
+
+/* Extra data pop-up becomes visible when its parent interactive item is hovered */
+.home-fader .interactive-item .extra-data {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Interactive Item Container: Ensures it stays clickable and visible */
+.interactive-item {
+    z-index: 30; /* Stacks above faded content */
+    position: relative; /* Needed for absolute positioning of children (.floating-document, .extra-data) */
+}
+
+/* Interactive Text within the item: Ensures text itself remains clear and transitions color */
+.interactive-item .interactive-text {
+    transition: color 0.3s ease;
+}
+
+/* Persistent Elements: Ensures these elements never fade or lose interaction */
+.persistent-elements {
+    z-index: 60; /* Higher than floating documents and faded content */
+}
+
+/* Interactive Text Container: Ensures it is clickable and doesn't fade itself */
+#interactive-text-container {
+    z-index: 10; /* Lower than persistent elements, but higher than general faded content */
+}
+
+/* Media queries for responsive adjustments on smaller screens */
+@media (max-width: 768px) {
+    .floating-document {
+        width: 90vw;
+        height: 70vw;
+    }
+    .extra-data {
+        position: static; /* Stacks vertically below text on small screens */
+        transform: none;
+        margin-top: 1rem;
+        min-width: unset;
+        white-space: normal;
+    }
+    .interactive-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* --- Showcase Section Specific Styles --- */
+#showcase {
+    position: relative;
+    background-color: #F8F8F8; /* Light gray background from screenshot */
+    color: #333; /* Dark text for light mode */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dark #showcase {
+    background-color: #2D3748; /* Darker gray for dark mode */
+    color: #E2E8F0; /* Light text for dark mode */
+}
+/* Large background number for the showcase section */
+.showcase-bg-number {
+    position: absolute;
+    top: 50%;
+    right: 5vw; /* Adjusted for better visibility */
+    transform: translateY(-50%);
+    font-size: 20rem; /* Very large number */
+    font-weight: 900;
+    color: rgba(220, 220, 220, 0.7); /* Faded light gray */
+    opacity: 0.5;
+    pointer-events: none; /* Not interactive */
+    transition: color 0.5s ease, transform 0.5s ease;
+    z-index: 10; /* Behind content, above section background */
+}
+/* Dark mode adjustment for the background number */
+.dark .showcase-bg-number {
+    color: rgba(90, 90, 90, 0.7); /* Faded dark gray */
+}
+/* Individual showcase item card styles */
+.showcase-item {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-bottom: 4rem; /* Spacing for scroll detection */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    z-index: 20; /* Above background number */
+    position: relative; /* For image positioning if needed */
+}
+/* Dark mode adjustment for showcase items */
+.dark .showcase-item {
+    background-color: #1A202C;
+}
+/* Image/Video container within showcase item to maintain aspect ratio */
+.showcase-item-image-container {
+    width: 100%;
+    padding-bottom: 60%; /* Aspect ratio 5:3 (height is 60% of width) */
+    position: relative;
+    background-color: #d1d5db; /* Placeholder grey */
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+/* Ensures images/videos fill their container */
+.showcase-item-image-container img,
+.showcase-item-image-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- Stats Section Specific Styles --- */
+#stats {
+    background-color: white;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dark #stats {
+    background-color: #2D3748;
+}
+/* Individual stat card styles */
+.stat-card {
+    background-color: #f7fafc;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+/* Dark mode adjustment for stat cards */
+.dark .stat-card {
+    background-color: #1A202C;
+}
+/* Container for the progress bar visuals */
+.stat-bar-container {
+    width: 100%;
+    background-color: #e2e8f0; /* Light grey background for empty part of bar */
+    border-radius: 0.25rem;
+    height: 8px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+/* Fill for the progress bar */
+.stat-bar-fill {
+    background-color: #63b3ed; /* Blueish color for filled part */
+    height: 100%;
+    border-radius: 0.25rem;
+}
+
+/* --- Testimonials Section Specific Styles --- */
+#testimonials {
+    position: relative;
+    background-color: #4A00B8; /* Deep purple from screenshot */
+    overflow: hidden; /* To contain canvas and prevent overflow */
+    color: white;
+}
+/* Canvas element for particle animation in testimonial section */
+.testimonial-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Below content, above background */
+    opacity: 0.8; /* Slightly transparent */
+}
+/* Ensures testimonial content is layered above the canvas */
+.testimonial-content {
+    position: relative;
+    z-index: 10; /* Above canvas */
+}
+/* Individual testimonial card styles */
+.testimonial-card {
+    background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
+    backdrop-filter: blur(5px); /* Frosted glass effect */
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: scale(0.8); /* Initial smaller scale for zoom-in effect */
+    opacity: 0; /* Initially hidden */
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
+}
+/* State for showing and zooming in testimonial cards */
+.testimonial-card.show {
+    transform: scale(1);
+    opacity: 1;
+}
+/* Styling for the "Happy Sellers" text */
+.happy-sellers {
+    font-size: 5rem; /* Large text */
+    font-weight: 900;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Custom Video Loader Styles --- */
+/* This loader appears during video loading, replacing the global loader */
+#custom-video-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4A4A4A; /* Grey background */
+    display: block; /* Allows children to be absolutely positioned relative to it */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 9990; /* High z-index, below global loader but above content */
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+/* State for showing the custom video loader */
+#custom-video-loader.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Define CSS Variables for consistency and easier adjustment of loader dimensions */
+:root {
+    --bar-thickness: 30px; /* Thickness of both parts of the 'L' */
+    --vertical-bar-height: 250px; /* Height of the vertical part of the 'L' */
+    --horizontal-extension-width: 150px; /* Width of the horizontal part of the 'L' */
+    --l-bottom-offset: 50px; /* Distance of the 'L' corner from the bottom of the viewport */
+    --l-left-offset: 50px;   /* Distance of the 'L' corner from the left of the viewport */
+}
+
+/* Loader Bar Container: The main element that transforms into the 'L' shape */
+.loader-bar-container {
+    width: 70%; /* Initial width when horizontal */
+    max-width: 500px;
+    height: var(--bar-thickness); /* Uses the defined thickness */
+    background-color: #888; /* Background for the progress bar track */
+    border-radius: calc(var(--bar-thickness) / 2); /* Half thickness for rounded ends */
+    overflow: hidden;
+    position: absolute; /* Positions relative to #custom-video-loader (viewport) */
+    top: 50%; /* Initially centered horizontally */
+    left: 50%; /* Initially centered vertically */
+    transform: translate(-50%, -50%); /* Adjusts for its own size to be perfectly centered */
+    transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Smooth, elastic transition for all properties */
+}
+
+/* Loader Bar Fill: The white part that progresses */
+.loader-bar-fill {
+    height: 100%;
+    width: 0%; /* Starts with no fill */
+    background-color: white;
+    border-radius: inherit; /* Inherits the rounded ends from its parent */
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth fill animation */
+}
+
+/* L-shape transformation: Applies when the 'l-shape' class is added */
+.loader-bar-container.l-shape {
+    width: var(--bar-thickness); /* Becomes thin (vertical bar's thickness) */
+    height: var(--vertical-bar-height); /* Becomes tall (vertical bar's height) */
+    /* Positions the *bottom-left* corner of this vertical bar
+       at the desired L-corner coordinates relative to the viewport. */
+    bottom: var(--l-bottom-offset);
+    left: var(--l-left-offset);
+    top: auto; /* Overrides initial top:50% */
+    right: auto; /* Ensures it stays on the left */
+    transform: none; /* Removes the initial centering transform */
+}
+
+/* L-shape Extension: The horizontal part of the 'L' */
+.l-shape-extension {
+    position: absolute; /* Positions relative to #custom-video-loader (viewport) */
+    /* Positions its *top-left* corner to connect seamlessly
+       to the bottom-left corner of the vertical bar. */
+    bottom: var(--l-bottom-offset); /* Aligns with the bottom of the vertical bar */
+    left: calc(var(--l-left-offset) + var(--bar-thickness)); /* Starts right after the vertical bar's width */
+    transform-origin: left center; /* Ensures it grows horizontally from its left edge */
+    width: 0; /* Starts hidden */
+    height: var(--bar-thickness); /* Same thickness as the vertical bar */
+    background-color: white;
+    border-radius: calc(var(--bar-thickness) / 2);
+    opacity: 0;
+    transition: width 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s, opacity 0.5s ease; /* Delayed, elastic animation */
+}
+
+/* When the main bar becomes L-shaped, show and expand the extension */
+.loader-bar-container.l-shape + .l-shape-extension {
+    opacity: 1;
+    width: var(--horizontal-extension-width); /* Expands to its full defined width */
+}
+
+/* Loader Percentage Text: Displays the loading percentage */
+.loader-percentage {
+    position: absolute; /* Positions relative to #custom-video-loader (viewport) */
+    left: var(--l-left-offset); /* Aligns with the left edge of the 'L' */
+    /* Positions 20px above the top of the vertical bar */
+    bottom: calc(var(--l-bottom-offset) + var(--vertical-bar-height) + 20px);
+    font-size: 5rem; /* Large font size */
+    font-weight: bold;
+    color: white;
+    opacity: 0.9;
+    z-index: 9991; /* Above the loader bars */
+    transition: opacity 0.3s ease;
+}
+
+/* --- Idle Objects Disturbance Effect --- */
+/* These are small circles that move around and repel from the mouse */
+.idle-object {
+    position: fixed; /* Fixed position relative to the viewport */
+    width: 30px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+    border-radius: 50%; /* Makes them circular */
+    pointer-events: none; /* Ensures they don't interfere with clicks on content */
+    opacity: 0; /* Starts hidden */
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.1s linear; /* Fast transform for quick disturbance response */
+    z-index: -1; /* Behind all content */
+}
+/* Dark mode adjustment for idle objects */
+.dark .idle-object {
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent black in dark mode */
+}
+/* State for activating (showing) idle objects */
+.idle-object.active {
+    opacity: 0.7;
+    visibility: visible;
+}
+/* Variations in color for different idle objects for visual diversity */
+.idle-object:nth-child(1) { background-color: rgba(255, 99, 71, 0.3); } /* Tomato */
+.idle-object:nth-child(2) { background-color: rgba(60, 179, 113, 0.3); } /* Medium Sea Green */
+.idle-object:nth-child(3) { background-color: rgba(100, 149, 237, 0.3); } /* Cornflower Blue */
+.idle-object:nth-child(4) { background-color: rgba(255, 215, 0, 0.3); } /* Gold */
+.idle-object:nth-child(5) { background-color: rgba(186, 85, 211, 0.3); } /* Medium Orchid */
